@@ -1,0 +1,16 @@
+[submodule "rotors_simulator"]
+	path = rotors_simulator
+	url = https://github.com/arunser/rotors_simulator.git
+	branch = rotors2
+[submodule "whycon"]
+	path = whycon
+	url = https://github.com/arunser/whycon.git
+	branch = ros2
+[submodule "mav_comm"]
+	path = mav_comm
+	url = https://github.com/arunser/mav_comm.git
+	branch = ros2
+[submodule "pid_tune"]
+	path = pid_tune
+	url = https://github.com/erts-RnD/pid_tune.git
+	branch = ros2
