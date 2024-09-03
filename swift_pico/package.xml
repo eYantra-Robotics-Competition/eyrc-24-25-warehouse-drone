@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>swift_pico</name>
+  <version>1.0.0</version>
+  <description>Controller Package for Swift Pico</description>
+  <maintainer email="stormbreaker.004@gmail.com">arunser</maintainer>
+  <license>TODO: License declaration</license>
+  <author>Arun P Madhu</author>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+  <depend>swift_msgs</depend>
+  <depend>pid_msg</depend>
+  <depend>geometry_msgs</depend>
+  <depend>rclpy</depend>
+  <depend>rclcpp</depend>
+
+  <depend>ros_gz</depend>
+  <depend>sdformat_urdf</depend>
+  <depend>joint_state_publisher_gui</depend>
+  <depend>rotors_swift_description</depend>
+  <depend>rotors_swift_gazebo</depend>
+
+  <exec_depend>ros2launch</exec_depend>
+
+  <test_depend>ament_lint_auto</test_depend>
+  <test_depend>ament_lint_common</test_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>
