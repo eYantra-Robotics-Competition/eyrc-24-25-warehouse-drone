@@ -6,9 +6,9 @@ This node publishes and subsribes the following topics:
 
 		PUBLICATIONS			SUBSCRIPTIONS
 		/drone_command			/whycon/poses
-		/pid_error				/throttle_pid
-								/pitch_pid
-								/roll_pid
+		/pid_error			/throttle_pid
+						/pitch_pid
+						/roll_pid
 					
 Rather than using different variables, use list. eg : self.setpoint = [1,2,3], where index corresponds to x,y,z ...rather than defining self.x_setpoint = 1, self.y_setpoint = 2
 CODE MODULARITY AND TECHNIQUES MENTIONED LIKE THIS WILL HELP YOU GAINING MORE MARKS WHILE CODE EVALUATION.	
@@ -67,7 +67,7 @@ class Swift_Pico(Node):
 	
 		self.sample_time = 0.060  # in seconds
 
-		# Publishing /drone_command, /throttle_error, /pitch_error, /roll_error
+		# Publishing /drone_command, /pid_error
 		self.command_pub = self.create_publisher(SwiftMsgs, '/drone_command', 10)
 		self.pid_error_pub = self.create_publisher(PIDError, '/pid_error', 10)
 
