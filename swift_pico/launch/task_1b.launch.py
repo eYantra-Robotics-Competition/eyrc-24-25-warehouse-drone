@@ -62,9 +62,9 @@ def generate_launch_description():
                 'outer_diameter': 0.38,
                 'inner_diameter': 0.14,
             }],
-            remappings=[
-                ('image_raw', '/camera/image_raw')
-            ]
+            # remappings=[
+            #     ('image_raw', '/image_raw')
+            # ]
         )
 
     image_view = Node(
