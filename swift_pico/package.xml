@@ -10,6 +10,7 @@
 
   <buildtool_depend>ament_cmake</buildtool_depend>
   <depend>swift_msgs</depend>
+  <depend>waypoint_navigation</depend>
   <depend>pid_msg</depend>
   <depend>geometry_msgs</depend>
   <depend>rclpy</depend>
@@ -20,6 +21,7 @@
   <depend>joint_state_publisher_gui</depend>
   <depend>rotors_swift_description</depend>
   <depend>rotors_swift_gazebo</depend>
+  <depend>swift_pico_description</depend>
 
   <exec_depend>ros2launch</exec_depend>
 
