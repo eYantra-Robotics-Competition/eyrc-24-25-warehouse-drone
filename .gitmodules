@@ -1,6 +1,6 @@
 [submodule "rotors_simulator"]
 	path = rotors_simulator
-	url = https://github.com/arunser/rotors_simulator.git
+	url = git@github.com:roboclubdtu/rotors_simulator.git
 	branch = rotors2
 [submodule "whycon"]
 	path = whycon
