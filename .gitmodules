@@ -14,6 +14,3 @@
 	path = pid_tune
 	url = https://github.com/erts-RnD/pid_tune.git
 	branch = ros2
-[submodule "swift_pico/wd_executables"]
-	path = swift_pico/wd_executables
-	url = https://github.com/BHavikJ12/wd_executables.git
