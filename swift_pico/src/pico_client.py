@@ -49,6 +49,8 @@ class WayPointClient(Node):
 
         #complete the goal_response_callback. Refer to Writing an action server and client (Python) in ROS 2 tutorials
 
+        
+
     def get_result_callback(self, future):
 
         #complete the missing line

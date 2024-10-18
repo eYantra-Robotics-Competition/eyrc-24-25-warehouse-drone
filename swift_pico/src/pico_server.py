@@ -33,7 +33,7 @@ class WayPointServer(Node):
 
 
         self.drone_position = [0.0, 0.0, 0.0, 0.0]
-        self.setpoint = [0, 0, 26, 0] 
+        self.setpoint = [0, 0, 27, 0] 
         self.dtime = 0
 
         self.cmd = SwiftMsgs()
@@ -173,7 +173,6 @@ class WayPointServer(Node):
             feedback_msg.current_waypoint.header.stamp.sec = self.max_time_inside_sphere
 
             goal_handle.publish_feedback(feedback_msg)
-            time.sleep(1)
 
             drone_is_in_sphere = self.is_drone_in_sphere(self.drone_position, goal_handle, 0.4) #the value '0.4' is the error range in the whycon coordinates that will be used for grading. 
             #You can use greater values initially and then move towards the value '0.4'. This will help you to check whether your waypoint navigation is working properly. 
@@ -183,15 +182,14 @@ class WayPointServer(Node):
             
             elif drone_is_in_sphere and self.point_in_sphere_start_time is None:
                         self.point_in_sphere_start_time = self.dtime
-                        self.get_logger().info('Drone in sphere for 1st time')
+                        self.get_logger().info('Drone in sphere for 1st time')                        #you can choose to comment this out to get a better look at other logs
 
             elif drone_is_in_sphere and self.point_in_sphere_start_time is not None:
                         self.time_inside_sphere = self.dtime - self.point_in_sphere_start_time
-                        self.get_logger().info('Drone in sphere')
+                        self.get_logger().info('Drone in sphere')                                     #you can choose to comment this out to get a better look at other logs
                              
             elif not drone_is_in_sphere and self.point_in_sphere_start_time is not None:
-                        self.get_logger().info('Drone out of sphere')
-                        self.time_inside_sphere = self.dtime - self.point_in_sphere_start_time
+                        self.get_logger().info('Drone out of sphere')                                 #you can choose to comment this out to get a better look at other logs
                         self.point_in_sphere_start_time = None
 
             if self.time_inside_sphere > self.max_time_inside_sphere:
@@ -204,7 +202,8 @@ class WayPointServer(Node):
         goal_handle.succeed()
 
         #create a NavToWaypoint result object. Refer to Writing an action server and client (Python) in ROS 2 tutorials
-        result.hov_time = self.dtime - self.duration
+
+        result.hov_time = self.dtime - self.duration #this is the total time taken by the drone in trying to stabilize at a point
         return result
 
     def is_drone_in_sphere(self, drone_pos, sphere_center, radius):
