@@ -11,7 +11,7 @@ def generate_launch_description():
     # Configure ROS nodes for launch
 
     # Setup project paths
-    pkg_project_bringup = get_package_share_directory('rotors_swift_gazebo')
+    pkg_project_bringup = get_package_share_directory('swift_pico')
     pkg_project_gazebo = get_package_share_directory('swift_pico')
     pkg_ros_gz_sim = get_package_share_directory('ros_gz_sim')
 
