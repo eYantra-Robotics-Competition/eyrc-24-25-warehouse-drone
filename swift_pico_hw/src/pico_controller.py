@@ -6,22 +6,40 @@ This node publishes and subsribes the following topics:
 
 		PUBLICATIONS			SUBSCRIPTIONS
 		/drone_command			/whycon/poses
-		/pid_error				/throttle_pid
-								/pitch_pid
-								/roll_pid
+		/pid_error			/throttle_pid
+						/pitch_pid
+						/roll_pid
 					
 Rather than using different variables, use list. eg : self.setpoint = [1,2,3], where index corresponds to x,y,z ...rather than defining self.x_setpoint = 1, self.y_setpoint = 2
 CODE MODULARITY AND TECHNIQUES MENTIONED LIKE THIS WILL HELP YOU GAINING MORE MARKS WHILE CODE EVALUATION.	
 '''
 
 # Importing the required libraries
-
+import scipy.signal
+import numpy as np
 from rc_msgs.msg import RCMessage
 from rc_msgs.srv import CommandBool
 from geometry_msgs.msg import PoseArray
 from pid_msg.msg import PIDTune, PIDError
 import rclpy
 from rclpy.node import Node
+
+MIN_ROLL = 1200
+BASE_ROLL = 1500
+MAX_ROLL = 1700
+SUM_ERROR_ROLL_LIMIT = 5000
+
+MIN_PITCH = 1200
+BASE_PITCH = 1500
+MAX_PITCH = 1700
+SUM_ERROR_PITCH_LIMIT = 5000
+
+MIN_THROTTLE = 1250
+BASE_THROTTLE = 1500
+MAX_THROTTLE = 2000
+SUM_ERROR_THROTTLE_LIMIT = 5000
+
+CMD = [[], [], []]
 
 
 class Swift_Pico(Node):
@@ -125,6 +143,53 @@ class Swift_Pico(Node):
 
 	#----------------------------------------------------------------------------------------------------------------------
 
+	def publish_filtered_data(self, roll, pitch, throttle):
+
+		self.cmd.rc_throttle = int(throttle)
+		self.cmd.rc_roll = int(roll)
+		self.cmd.rc_pitch = int(pitch)
+		self.cmd.rc_yaw = int(1500)
+
+
+		# BUTTERWORTH FILTER low pass filter
+		span = 15
+		for index, val in enumerate([roll, pitch, throttle]):
+			CMD[index].append(val)
+			if len(CMD[index]) == span:
+				CMD[index].pop(0)
+			if len(CMD[index]) != span-1:
+				return
+			order = 3 # determining order 
+			fs = 30 # to keep in order same as hz topic runs
+			fc = 4 
+			nyq = 0.5 * fs
+			wc = fc / nyq
+			b, a = scipy.signal.butter(N=order, Wn=wc, btype='lowpass', analog=False, output='ba')
+			filtered_signal = scipy.signal.lfilter(b, a, CMD[index])
+			if index == 0:
+				self.cmd.rc_roll = int(filtered_signal[-1])
+			elif index == 1:
+				self.cmd.rc_pitch = int(filtered_signal[-1])
+			elif index == 2:
+				self.cmd.rc_throttle = int(filtered_signal[-1])
+
+			if self.cmd.rc_roll > MAX_ROLL:     #checking range i.e. bet 1000 and 2000
+				self.cmd.rc_roll = MAX_ROLL
+			elif self.cmd.rc_roll < MIN_ROLL:
+				self.cmd.rc_roll = MIN_ROLL
+
+			# Similarly add bounds for pitch yaw and throttle 
+			if self.cmd.rc_throttle > MAX_THROTTLE:
+				self.cmd.rc_throttle = MAX_THROTTLE
+			elif self.cmd.rc_throttle < MIN_THROTTLE:
+				self.cmd.rc_throttle = MIN_THROTTLE
+
+			if self.cmd.rc_pitch > MAX_PITCH:
+				self.cmd.rc_pitch = MAX_PITCH
+			elif self.cmd.rc_pitch < MIN_PITCH:
+				self.cmd.rc_pitch = MIN_PITCH
+
+		self.command_pub.publish(self.cmd)
 
 	def pid(self):
 	#-----------------------------Write the PID algorithm here--------------------------------------------------------------
@@ -132,33 +197,29 @@ class Swift_Pico(Node):
 	# Steps:
 	# 	1. Compute error in each axis. eg: error[0] = self.drone_position[0] - self.setpoint[0] ,where error[0] corresponds to error in x...
 	#	2. Compute the error (for proportional), change in error (for derivative) and sum of errors (for integral) in each axis. Refer "Understanding PID.pdf" to understand PID equation.
-	#	3. Calculate the pid output required for each axis. For eg: calcuate self.out_roll, self.out_pitch, etc.
-	#	4. Reduce or add this computed output value on the avg value ie 1500. For eg: self.cmd.rcRoll = 1500 + self.out_roll. LOOK OUT FOR SIGN (+ or -). EXPERIMENT AND FIND THE CORRECT SIGN
-	#	5. Don't run the pid continously. Run the pid only at the a sample time. self.sampletime defined above is for this purpose. THIS IS VERY IMPORTANT.
-	#	6. Limit the output value and the final command value between the maximum(2000) and minimum(1000)range before publishing. For eg : if self.cmd.rcPitch > self.max_values[1]:
+	#   3. Calculate derivative and intergral errors. Apply anti windup on integral error (You can use your own method for anti windup, an example is shown here)
+	#	4. Calculate the pid output required for each axis. For eg: calcuate self.out_roll, self.out_pitch, etc.
+	#	5. Reduce or add this computed output value on the avg value ie 1500. For eg: self.cmd.rcRoll = 1500 + self.out_roll. LOOK OUT FOR SIGN (+ or -). EXPERIMENT AND FIND THE CORRECT SIGN
+	#	7. Don't run the pid continously. Run the pid only at the a sample time. self.sampletime defined above is for this purpose. THIS IS VERY IMPORTANT.
+	#	8. Limit the output value and the final command value between the maximum(2000) and minimum(1000)range before publishing. For eg : if self.cmd.rcPitch > self.max_values[1]:
 	#																														self.cmd.rcPitch = self.max_values[1]
-	#	7. Update previous errors.eg: self.prev_error[1] = error[1] where index 1 corresponds to that of pitch (eg)
-	#	8. Add error_sum
+	#	9. Update previous errors.eg: self.prev_error[1] = error[1] where index 1 corresponds to that of pitch (eg)
+	#	10. Add error_sum
+
+
+		
 
 
 
 
+		# output values of PID
+		self.roll_out = 
+        
+		self.pitch_out = 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+		self.throttle_out = 
 	#------------------------------------------------------------------------------------------------------------------------
-		self.command_pub.publish(self.cmd)
+		self.publish_filtered_data(roll = self.roll_out,pitch = self.pitch_out,throttle = self.throttle_out)
 		# calculate throttle error, pitch error and roll error, then publish it accordingly
 		self.pid_error_pub.publish(self.pid_error)
 
