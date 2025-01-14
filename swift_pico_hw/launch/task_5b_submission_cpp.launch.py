@@ -86,7 +86,7 @@ def generate_launch_description():
         ),
 
         launch.actions.ExecuteProcess(
-            cmd=['ros2', 'bag', 'record', '-o', 'task_5b', '/whycon/poses'],
+            cmd=['ros2', 'bag', 'record', '-o', 'task_5b', '/whycon/poses', '/encrypted_number', '/package_id'],
             output='screen'
         )
     ])
